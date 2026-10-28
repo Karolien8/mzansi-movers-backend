@@ -8,10 +8,14 @@ const crypto = require('crypto');
 // Initialise once
 if (!admin.apps.length) {
   let credential;
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // Single env var containing the entire service account JSON
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_B64) {
+    // Base64-encoded service account JSON (most reliable for Vercel)
+    const json = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_B64, 'base64').toString('utf8');
+    const serviceAccount = JSON.parse(json);
+    credential = admin.credential.cert(serviceAccount);
+  } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // Plain JSON service account
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    // Fix private key newlines that Vercel may mangle
     if (serviceAccount.private_key) {
       serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
     }
