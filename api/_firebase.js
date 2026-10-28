@@ -1,4 +1,4 @@
-**
+/**
  * Firebase Admin SDK – initialisation and helper functions
  * Stores anonymised user data under hashed tokens (never raw phone numbers)
  */
