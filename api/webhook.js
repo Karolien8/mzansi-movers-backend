@@ -5,11 +5,10 @@
  * GET  /webhook → verification (Meta checks this when you set up the webhook)
  * POST /webhook → incoming messages
  */
-const { getOrCreateUser } = require('./_firebase');
-const { handleStep } = require('./_flow');
 
 module.exports = async function handler(req, res) {
   // ─── Webhook verification (GET) ───
+  // This must work without Firebase so Meta can verify the webhook
   if (req.method === 'GET') {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
@@ -25,6 +24,10 @@ module.exports = async function handler(req, res) {
   // ─── Incoming message (POST) ───
   if (req.method === 'POST') {
     try {
+      // Load Firebase and flow engine only when handling messages
+      const { getOrCreateUser } = require('./_firebase');
+      const { handleStep } = require('./_flow');
+
       const body = req.body;
 
       // Meta sends various webhook events — we only care about messages
