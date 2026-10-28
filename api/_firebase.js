@@ -11,6 +11,10 @@ if (!admin.apps.length) {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     // Single env var containing the entire service account JSON
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    // Fix private key newlines that Vercel may mangle
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
     credential = admin.credential.cert(serviceAccount);
   } else {
     // Fallback: three separate env vars
